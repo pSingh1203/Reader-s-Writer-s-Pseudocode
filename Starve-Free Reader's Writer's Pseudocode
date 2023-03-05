@@ -1,0 +1,51 @@
+//Writer’s Pseudocode:
+
+wait(initial)
+if(flag==0){
+	signal(control_writer)
+	flag=1
+}
+signal(initial)
+writer_waiting++
+wait(write_mutex)
+wait(control_writer)
+//critical section for write
+writer_waiting--
+if(reader_waiting>0){		
+	signal(control_reader)
+}
+else{
+	signal(control_writer)
+}
+signal(write_mutex)
+
+
+//Reader’s Pseudocode:
+
+wait(initial)
+if(flag==0){
+	signal(control_reader)
+	flag=1
+}
+signal(initial)
+reader_waiting++
+wait(control_reader)
+while(switch==1);
+if(writer_waiting>0){
+	switch = 1;
+}
+signal(control_reader)
+wait(exc)
+reader_in ++
+signal(exc)
+//critical section for read
+wait(exc)
+reader_in--
+signal(exc)
+if(reader_in==0){
+	if(switch){
+		signal(control_writer)
+		wait(control_reader)
+		switch = 0
+	}
+}
